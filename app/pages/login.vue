@@ -1,10 +1,35 @@
 <script setup lang="ts">
-const { login, logout, user } = useAuth()
+import { FetchError } from 'ofetch'
 
-const email = ref('admin@infotep.test')
-const password = ref('password123')
+definePageMeta({ public: true })
+
+const { login } = useAuth()
+const route = useRoute()
+
+const email = ref('')
+const password = ref('')
 const errorMessage = ref<string | null>(null)
 const loading = ref(false)
+
+// Solo rutas internas: evita redirecciones abiertas a otros sitios (?redirect=//evil.com).
+function destinoSeguro(valor: unknown): string {
+  return typeof valor === 'string' && valor.startsWith('/') && !valor.startsWith('//')
+    ? valor
+    : '/'
+}
+
+function mensajeDeError(error: unknown): string {
+  if (error instanceof FetchError) {
+    if (error.statusCode === 422) {
+      return error.data?.errors?.email?.[0] ?? 'Las credenciales no son válidas.'
+    }
+    if (error.statusCode === 429) {
+      return error.data?.errors?.email?.[0] ?? 'Demasiados intentos. Espera un momento e inténtalo de nuevo.'
+    }
+  }
+
+  return 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+}
 
 async function handleSubmit() {
   errorMessage.value = null
@@ -12,53 +37,39 @@ async function handleSubmit() {
 
   try {
     await login(email.value, password.value)
-  } catch (e) {
-    errorMessage.value = 'No se pudo iniciar sesión. Revisa la consola/Network.'
-    console.error(e)
+    await navigateTo(destinoSeguro(route.query.redirect))
+  } catch (error) {
+    errorMessage.value = mensajeDeError(error)
   } finally {
-    loading.value = false
-  }
-}
-
-async function handleLogout() {
-  loading.value = true
-  try {
-    await logout()
-  } catch (e) {
-    errorMessage.value = 'No se pudo cerrar sesión. Revisa la consola/Network.'
-    console.error(e)
-  } finally {
+    password.value = ''
     loading.value = false
   }
 }
 </script>
 
 <template>
-  <div style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
-    <h1>Login — SistemaMatrizRiesgo</h1>
+  <main style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
+    <h1>Iniciar sesión</h1>
+    <p>Sistema de Gestión de Matrices de Riesgo</p>
 
     <form @submit.prevent="handleSubmit">
       <div>
-        <label>Email</label><br>
-        <input v-model="email" type="email">
+        <label for="email">Correo electrónico</label><br>
+        <input id="email" v-model="email" type="email" autocomplete="username" required>
       </div>
       <div style="margin-top: 0.5rem;">
-        <label>Password</label><br>
-        <input v-model="password" type="password">
+        <label for="password">Contraseña</label><br>
+        <input id="password" v-model="password" type="password" autocomplete="current-password" required>
       </div>
       <button type="submit" :disabled="loading" style="margin-top: 1rem;">
         {{ loading ? 'Entrando...' : 'Entrar' }}
       </button>
     </form>
 
-    <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+    <p v-if="errorMessage" role="alert" style="color: #b91c1c;">{{ errorMessage }}</p>
 
-    <div v-if="user" style="margin-top: 2rem; padding: 1rem; background: #eee;">
-      <strong>Usuario autenticado:</strong>
-      <pre>{{ user }}</pre>
-      <button @click="handleLogout" :disabled="loading">
-        {{ loading ? 'Saliendo...' : 'Cerrar sesión' }}
-      </button>
-    </div>
-  </div>
+    <p style="margin-top: 2rem;">
+      <NuxtLink to="/olvide-contrasena">¿Olvidaste tu contraseña?</NuxtLink>
+    </p>
+  </main>
 </template>
