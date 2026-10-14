@@ -15,7 +15,6 @@ export interface DepartamentoResumen {
 
 export interface Departamento extends DepartamentoResumen {
   direccion: string | null
-  codigo_referencia: string | null
   activo: boolean
 }
 

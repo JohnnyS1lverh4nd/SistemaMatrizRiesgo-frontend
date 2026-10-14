@@ -30,8 +30,9 @@ async function handleLogout() {
       </ul>
     </template>
 
-    <nav v-if="user.role?.slug === ROL_ADMINISTRADOR" style="margin-bottom: 1rem;">
-      <NuxtLink to="/usuarios">Gestionar usuarios</NuxtLink>
+    <nav style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+      <NuxtLink v-if="user.role?.slug === ROL_ADMINISTRADOR" to="/usuarios">Gestionar usuarios</NuxtLink>
+      <NuxtLink to="/cambiar-contrasena">Cambiar contraseña</NuxtLink>
     </nav>
 
     <button :disabled="saliendo" @click="handleLogout">
