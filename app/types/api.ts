@@ -82,6 +82,52 @@ export interface MatrizCalorCelda {
   nivel_riesgo: NivelRiesgo
 }
 
+export type EstadoTratamiento = 'pendiente' | 'en_progreso' | 'cumplido'
+
+// RiesgoResource: una fila de la matriz (columnas del Excel, RF-3).
+export interface Riesgo {
+  id: number
+  matriz_id: number
+  riesgo_origen_id: number | null
+  orden: number
+  actividad: string
+  descripcion: string
+  factores: { id: number, nombre: string }[]
+  causas: string | null
+  control_actual: string | null
+  probabilidad: number | null
+  impacto: number | null
+  nivel_calculado: NivelRiesgo | null
+  nivel_ajustado: NivelRiesgo | null
+  justificacion_ajuste: string | null
+  // El que rige: ajustado si existe; si no, el calculado.
+  nivel: NivelRiesgo | null
+  sintoma: string | null
+  tratamiento: string | null
+  responsable: string | null
+  periodicidad: { id: number, nombre: string } | null
+  estado_tratamiento: EstadoTratamiento
+  permisos: { editar: boolean, eliminar: boolean, registrar_seguimiento: boolean }
+}
+
+// SeguimientoResource: entrada del histórico (no se edita; se anula con motivo).
+export interface Seguimiento {
+  id: number
+  riesgo_id: number
+  fecha: string
+  descripcion: string
+  estado_tratamiento_anterior: EstadoTratamiento | null
+  estado_tratamiento_nuevo: EstadoTratamiento | null
+  registrado_por: { id: number, name: string }
+  registrado_at: string | null
+  anulado: boolean
+  anulado_at: string | null
+  anulado_por: { id: number, name: string } | null
+  motivo_anulacion: string | null
+  evidencias: { id: number, nombre: string, mime: string, tamano: number }[]
+  permisos: { anular: boolean }
+}
+
 // UserResource. El rol solo sirve para adaptar la interfaz: los permisos
 // reales siempre se comprueban en Laravel.
 export interface User {

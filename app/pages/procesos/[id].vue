@@ -200,6 +200,7 @@ async function ejecutar() {
         </template>
         <template #acciones-cell="{ row }">
           <div class="flex flex-wrap justify-end gap-1">
+            <UButton :to="`/matrices/${row.original.id}`" icon="i-lucide-table-2" label="Riesgos" color="neutral" variant="soft" size="sm" />
             <UButton v-if="row.original.permisos.editar" icon="i-lucide-pencil" label="Editar" color="neutral" variant="ghost" size="sm" @click="editar(row.original)" />
             <UButton v-if="row.original.permisos.publicar" icon="i-lucide-send" label="Publicar" color="primary" variant="soft" size="sm" @click="pedirConfirmacion('publicar', row.original)" />
             <UButton v-if="row.original.permisos.clonar" icon="i-lucide-copy" label="Nueva edición desde aquí" color="neutral" variant="ghost" size="sm" @click="clonar(row.original)" />
