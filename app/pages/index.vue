@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ROL_ADMINISTRADOR } from '~/types/api'
+
 const { user, logout } = useAuth()
 
 const saliendo = ref(false)
@@ -27,6 +29,10 @@ async function handleLogout() {
         </li>
       </ul>
     </template>
+
+    <nav v-if="user.role?.slug === ROL_ADMINISTRADOR" style="margin-bottom: 1rem;">
+      <NuxtLink to="/usuarios">Gestionar usuarios</NuxtLink>
+    </nav>
 
     <button :disabled="saliendo" @click="handleLogout">
       {{ saliendo ? 'Saliendo...' : 'Cerrar sesión' }}

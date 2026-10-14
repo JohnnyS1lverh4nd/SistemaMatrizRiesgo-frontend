@@ -1,26 +1,5 @@
 import { FetchError } from 'ofetch'
-
-interface Role {
-  id: number
-  nombre: string
-  slug: string
-}
-
-interface DepartamentoAsignado {
-  id: number
-  nombre: string
-  slug: string
-}
-
-// Forma de App\Http\Resources\UserResource. El rol solo sirve para adaptar
-// la interfaz: los permisos reales siempre se comprueban en Laravel.
-export interface User {
-  id: number
-  name: string
-  email: string
-  role: Role | null
-  departamentos: DepartamentoAsignado[]
-}
+import type { Item, User } from '~/types/api'
 
 export function useAuth() {
   const { api, asegurarCsrfCookie } = useApi()
@@ -33,7 +12,7 @@ export function useAuth() {
 
   async function fetchUser(): Promise<User | null> {
     try {
-      const response = await api<{ data: User }>('/api/user')
+      const response = await api<Item<User>>('/api/user')
       user.value = response.data
     } catch (error) {
       if (error instanceof FetchError && error.statusCode === 401) {
