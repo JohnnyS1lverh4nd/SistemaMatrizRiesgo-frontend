@@ -30,6 +30,14 @@ export interface User {
   departamentos: DepartamentoResumen[]
 }
 
+// GET /api/user
+export interface UsuarioActual {
+  data: User
+  meta: {
+    sesion_minutos: number
+  }
+}
+
 export interface Item<T> {
   data: T
 }

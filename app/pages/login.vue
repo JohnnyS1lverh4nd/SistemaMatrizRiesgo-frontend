@@ -11,6 +11,14 @@ const password = ref('')
 const errorMessage = ref<string | null>(null)
 const loading = ref(false)
 
+const MOTIVOS_CIERRE: Record<string, string> = {
+  'inactividad': 'Tu sesión se cerró por inactividad. Vuelve a iniciar sesión.',
+  'sesion-expirada': 'Tu sesión expiró. Vuelve a iniciar sesión.',
+}
+const motivoCierre = computed(() =>
+  typeof route.query.motivo === 'string' ? MOTIVOS_CIERRE[route.query.motivo] ?? null : null,
+)
+
 // Solo rutas internas: evita redirecciones abiertas a otros sitios (?redirect=//evil.com).
 function destinoSeguro(valor: unknown): string {
   return typeof valor === 'string' && valor.startsWith('/') && !valor.startsWith('//')
@@ -51,6 +59,8 @@ async function handleSubmit() {
   <main style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
     <h1>Iniciar sesión</h1>
     <p>Sistema de Gestión de Matrices de Riesgo</p>
+
+    <p v-if="motivoCierre" role="status" style="color: #92400e;">{{ motivoCierre }}</p>
 
     <form @submit.prevent="handleSubmit">
       <div>

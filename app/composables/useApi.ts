@@ -20,6 +20,9 @@ function leerCookie(nombre: string): string | null {
 
 export function useApi() {
   const apiBase = useRuntimeConfig().public.apiBase
+  const nuxtApp = useNuxtApp()
+  // Mismo estado que useAuth (no se importa useAuth para evitar la dependencia circular).
+  const user = useState('auth:user')
 
   async function asegurarCsrfCookie() {
     if (!leerCookie('XSRF-TOKEN')) {
@@ -47,6 +50,21 @@ export function useApi() {
       const token = leerCookie('XSRF-TOKEN')
       if (token) {
         options.headers.set('X-XSRF-TOKEN', token)
+      }
+    },
+    onResponse({ response }) {
+      // Cualquier respuesta correcta renovó la sesión en Laravel.
+      if (response.ok) {
+        marcarContactoServidor()
+      }
+    },
+    async onResponseError({ response }) {
+      // La sesión venció en el servidor mientras el usuario la tenía abierta.
+      if (response.status === 401 && user.value !== null) {
+        user.value = null
+        await nuxtApp.runWithContext(() =>
+          navigateTo({ path: '/login', query: { motivo: 'sesion-expirada' } }),
+        )
       }
     },
   })

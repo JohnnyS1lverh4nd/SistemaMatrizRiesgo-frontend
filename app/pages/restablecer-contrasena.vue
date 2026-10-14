@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-
 definePageMeta({ public: true })
 
 // Se llega desde el enlace del correo: /restablecer-contrasena?token=...&email=...
@@ -34,12 +32,8 @@ async function handleSubmit() {
     })
     restablecida.value = true
   } catch (error) {
-    if (error instanceof FetchError && error.statusCode === 422) {
-      const porCampo: Record<string, string[]> = error.data?.errors ?? {}
-      errores.value = Object.values(porCampo).flat()
-    } else {
-      errores.value = ['No se pudo conectar con el servidor. Inténtalo de nuevo.']
-    }
+    const validacion = erroresDeValidacion(error)
+    errores.value = validacion ? Object.values(validacion).flat() : [mensajeDeErrorApi(error)]
   } finally {
     password.value = ''
     passwordConfirmation.value = ''

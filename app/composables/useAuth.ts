@@ -1,5 +1,5 @@
 import { FetchError } from 'ofetch'
-import type { Item, User } from '~/types/api'
+import type { UsuarioActual, User } from '~/types/api'
 
 export function useAuth() {
   const { api, asegurarCsrfCookie } = useApi()
@@ -7,13 +7,16 @@ export function useAuth() {
   const user = useState<User | null>('auth:user', () => null)
   // true cuando ya se consultó /api/user al menos una vez (haya sesión o no).
   const resuelto = useState<boolean>('auth:resuelto', () => false)
+  // Minutos de inactividad tras los que Laravel cierra la sesión (config/session.php).
+  const sesionMinutos = useState<number | null>('auth:sesion-minutos', () => null)
 
   const autenticado = computed(() => user.value !== null)
 
   async function fetchUser(): Promise<User | null> {
     try {
-      const response = await api<Item<User>>('/api/user')
+      const response = await api<UsuarioActual>('/api/user')
       user.value = response.data
+      sesionMinutos.value = response.meta.sesion_minutos
     } catch (error) {
       if (error instanceof FetchError && error.statusCode === 401) {
         user.value = null
@@ -42,5 +45,5 @@ export function useAuth() {
     }
   }
 
-  return { user, resuelto, autenticado, login, logout, fetchUser }
+  return { user, resuelto, autenticado, sesionMinutos, login, logout, fetchUser }
 }

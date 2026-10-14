@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-
 definePageMeta({ public: true })
 
 const { api } = useApi()
@@ -23,9 +21,7 @@ async function handleSubmit() {
     })
     mensaje.value = response.message
   } catch (error) {
-    errorMessage.value = error instanceof FetchError && error.statusCode === 422
-      ? 'Introduce un correo electrónico válido.'
-      : 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+    errorMessage.value = erroresDeValidacion(error)?.email?.[0] ?? mensajeDeErrorApi(error)
   } finally {
     loading.value = false
   }
