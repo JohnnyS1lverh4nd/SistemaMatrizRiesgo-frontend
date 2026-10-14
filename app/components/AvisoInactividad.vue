@@ -21,7 +21,6 @@ const { api } = useApi()
 const router = useRouter()
 
 const restanteMs = ref(Number.POSITIVE_INFINITY)
-const botonSeguir = ref<HTMLButtonElement | null>(null)
 
 const visible = computed(() => user.value !== null && restanteMs.value <= AVISO_MS)
 const segundos = computed(() => Math.max(0, Math.ceil(restanteMs.value / 1000)))
@@ -102,13 +101,6 @@ async function cerrarAhora() {
   }
 }
 
-watch(visible, async (mostrar) => {
-  if (mostrar) {
-    await nextTick()
-    botonSeguir.value?.focus()
-  }
-})
-
 onMounted(() => {
   intervalo = setInterval(actualizar, 1000)
   EVENTOS_ACTIVIDAD.forEach(evento =>
@@ -123,47 +115,24 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="visible" class="fondo">
-      <div
-        class="aviso"
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="aviso-inactividad-titulo"
-        aria-describedby="aviso-inactividad-texto"
-      >
-        <h2 id="aviso-inactividad-titulo">Tu sesión está por cerrarse</h2>
-        <p id="aviso-inactividad-texto" aria-live="polite">
-          Por inactividad, la sesión se cerrará en <strong>{{ segundos }} s</strong>.
-        </p>
-        <div class="acciones">
-          <button ref="botonSeguir" type="button" @click="latido">Seguir conectado</button>
-          <button type="button" class="secundario" @click="cerrarAhora">Cerrar sesión</button>
-        </div>
+  <!-- No se puede cerrar con Escape ni clic fuera: hay que elegir una acción. -->
+  <UModal
+    :open="visible"
+    :dismissible="false"
+    :close="false"
+    title="Tu sesión está por cerrarse"
+    description="Por inactividad, la sesión se cerrará automáticamente."
+  >
+    <template #body>
+      <p class="text-center text-3xl font-semibold tabular-nums" aria-live="polite">
+        {{ segundos }} s
+      </p>
+    </template>
+    <template #footer>
+      <div class="flex w-full justify-end gap-2">
+        <UButton label="Cerrar sesión" color="neutral" variant="ghost" @click="cerrarAhora" />
+        <UButton label="Seguir conectado" icon="i-lucide-refresh-cw" autofocus @click="latido" />
       </div>
-    </div>
-  </Teleport>
+    </template>
+  </UModal>
 </template>
-
-<style scoped>
-.fondo {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgb(0 0 0 / 0.4);
-  z-index: 1000;
-}
-.aviso {
-  max-width: 24rem;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  background: #fff;
-  font-family: sans-serif;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
-}
-.aviso h2 { margin-top: 0; font-size: 1.125rem; }
-.acciones { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.secundario { background: none; }
-</style>

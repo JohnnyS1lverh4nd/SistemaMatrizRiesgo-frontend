@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 
-definePageMeta({ public: true })
+definePageMeta({ public: true, layout: 'publico' })
 
 const { login } = useAuth()
 const route = useRoute()
@@ -56,30 +56,31 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <main style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
-    <h1>Iniciar sesión</h1>
-    <p>Sistema de Gestión de Matrices de Riesgo</p>
+  <UCard>
+    <template #header>
+      <h1 class="text-lg font-semibold">
+        Iniciar sesión
+      </h1>
+    </template>
 
-    <p v-if="motivoCierre" role="status" style="color: #92400e;">{{ motivoCierre }}</p>
+    <form class="space-y-4" @submit.prevent="handleSubmit">
+      <UAlert v-if="motivoCierre" color="warning" variant="subtle" icon="i-lucide-clock" :title="motivoCierre" />
+      <UAlert v-if="errorMessage" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorMessage" />
 
-    <form @submit.prevent="handleSubmit">
-      <div>
-        <label for="email">Correo electrónico</label><br>
-        <input id="email" v-model="email" type="email" autocomplete="username" required>
-      </div>
-      <div style="margin-top: 0.5rem;">
-        <label for="password">Contraseña</label><br>
-        <input id="password" v-model="password" type="password" autocomplete="current-password" required>
-      </div>
-      <button type="submit" :disabled="loading" style="margin-top: 1rem;">
-        {{ loading ? 'Entrando...' : 'Entrar' }}
-      </button>
+      <UFormField label="Correo electrónico" name="email" required>
+        <UInput v-model="email" type="email" autocomplete="username" required class="w-full" />
+      </UFormField>
+      <UFormField label="Contraseña" name="password" required>
+        <UInput v-model="password" type="password" autocomplete="current-password" required class="w-full" />
+      </UFormField>
+
+      <UButton type="submit" label="Entrar" :loading="loading" block />
     </form>
 
-    <p v-if="errorMessage" role="alert" style="color: #b91c1c;">{{ errorMessage }}</p>
-
-    <p style="margin-top: 2rem;">
-      <NuxtLink to="/olvide-contrasena">¿Olvidaste tu contraseña?</NuxtLink>
-    </p>
-  </main>
+    <template #footer>
+      <ULink to="/olvide-contrasena" class="text-sm">
+        ¿Olvidaste tu contraseña?
+      </ULink>
+    </template>
+  </UCard>
 </template>

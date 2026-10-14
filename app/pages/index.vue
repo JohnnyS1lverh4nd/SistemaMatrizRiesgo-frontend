@@ -1,42 +1,46 @@
 <script setup lang="ts">
-import { ROL_ADMINISTRADOR } from '~/types/api'
-
-const { user, logout } = useAuth()
-
-const saliendo = ref(false)
-
-async function handleLogout() {
-  saliendo.value = true
-  try {
-    await logout()
-  } finally {
-    saliendo.value = false
-    await navigateTo('/login')
-  }
-}
+// Página de inicio: la navegación y el cierre de sesión están en el layout.
+const { user } = useAuth()
 </script>
 
 <template>
-  <main v-if="user" style="max-width: 640px; margin: 4rem auto; font-family: sans-serif;">
-    <h1>Bienvenido, {{ user.name }}</h1>
-    <p>Rol: {{ user.role?.nombre ?? 'Sin rol asignado' }}</p>
-
-    <template v-if="user.departamentos.length">
-      <p>Departamentos asignados:</p>
-      <ul>
-        <li v-for="departamento in user.departamentos" :key="departamento.id">
-          {{ departamento.nombre }}
-        </li>
-      </ul>
+  <UDashboardPanel id="inicio">
+    <template #header>
+      <UDashboardNavbar title="Inicio" />
     </template>
 
-    <nav style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-      <NuxtLink v-if="user.role?.slug === ROL_ADMINISTRADOR" to="/usuarios">Gestionar usuarios</NuxtLink>
-      <NuxtLink to="/cambiar-contrasena">Cambiar contraseña</NuxtLink>
-    </nav>
+    <template #body>
+      <div v-if="user" class="grid max-w-3xl gap-4 md:grid-cols-2">
+        <UCard>
+          <p class="text-sm text-muted">
+            Bienvenido
+          </p>
+          <p class="text-lg font-semibold">
+            {{ user.name }}
+          </p>
+          <p class="text-sm">
+            {{ user.role?.nombre ?? 'Sin rol asignado' }}
+          </p>
+        </UCard>
 
-    <button :disabled="saliendo" @click="handleLogout">
-      {{ saliendo ? 'Saliendo...' : 'Cerrar sesión' }}
-    </button>
-  </main>
+        <UCard>
+          <p class="mb-2 text-sm text-muted">
+            Departamentos asignados
+          </p>
+          <div v-if="user.departamentos.length" class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="departamento in user.departamentos"
+              :key="departamento.id"
+              :label="departamento.nombre"
+              color="neutral"
+              variant="subtle"
+            />
+          </div>
+          <p v-else class="text-sm">
+            Ninguno.
+          </p>
+        </UCard>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

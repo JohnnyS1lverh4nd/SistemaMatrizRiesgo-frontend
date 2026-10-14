@@ -38,54 +38,30 @@ async function guardar() {
 </script>
 
 <template>
-  <main class="pagina">
-    <p><NuxtLink to="/">← Inicio</NuxtLink></p>
-    <h1>Cambiar contraseña</h1>
+  <UDashboardPanel id="cambiar-contrasena">
+    <template #header>
+      <UDashboardNavbar title="Cambiar contraseña" />
+    </template>
 
-    <p v-if="guardada" role="status" class="exito">Tu contraseña se actualizó correctamente.</p>
-    <p v-if="errorGeneral" role="alert" class="error">{{ errorGeneral }}</p>
+    <template #body>
+      <UCard class="max-w-md">
+        <form class="space-y-4" novalidate @submit.prevent="guardar">
+          <UAlert v-if="guardada" color="success" variant="subtle" icon="i-lucide-check" title="Tu contraseña se actualizó correctamente." />
+          <UAlert v-if="errorGeneral" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorGeneral" />
 
-    <form class="formulario" novalidate @submit.prevent="guardar">
-      <div class="campo">
-        <label for="current_password">Contraseña actual</label>
-        <input
-          id="current_password"
-          v-model="form.current_password"
-          type="password"
-          autocomplete="current-password"
-          :aria-invalid="!!errores.current_password"
-        >
-        <small v-for="mensaje in errores.current_password" :key="mensaje" class="error">{{ mensaje }}</small>
-      </div>
+          <UFormField label="Contraseña actual" name="current_password" :error="errores.current_password?.[0]" required>
+            <UInput v-model="form.current_password" type="password" autocomplete="current-password" class="w-full" />
+          </UFormField>
+          <UFormField label="Nueva contraseña" name="password" :error="errores.password?.[0]" required>
+            <UInput v-model="form.password" type="password" autocomplete="new-password" class="w-full" />
+          </UFormField>
+          <UFormField label="Confirmar nueva contraseña" name="password_confirmation" required>
+            <UInput v-model="form.password_confirmation" type="password" autocomplete="new-password" class="w-full" />
+          </UFormField>
 
-      <div class="campo">
-        <label for="password">Nueva contraseña</label>
-        <input
-          id="password"
-          v-model="form.password"
-          type="password"
-          autocomplete="new-password"
-          :aria-invalid="!!errores.password"
-        >
-        <small v-for="mensaje in errores.password" :key="mensaje" class="error">{{ mensaje }}</small>
-      </div>
-
-      <div class="campo">
-        <label for="password_confirmation">Confirmar nueva contraseña</label>
-        <input id="password_confirmation" v-model="form.password_confirmation" type="password" autocomplete="new-password">
-      </div>
-
-      <button type="submit" :disabled="guardando">
-        {{ guardando ? 'Guardando…' : 'Cambiar contraseña' }}
-      </button>
-    </form>
-  </main>
+          <UButton type="submit" label="Cambiar contraseña" :loading="guardando" />
+        </form>
+      </UCard>
+    </template>
+  </UDashboardPanel>
 </template>
-
-<style scoped>
-.pagina { max-width: 28rem; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif; }
-.formulario { display: grid; gap: 1rem; }
-.campo { display: grid; gap: 0.25rem; }
-.error { color: #b91c1c; }
-.exito { color: #15803d; }
-</style>

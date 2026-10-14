@@ -1,7 +1,14 @@
 <template>
-  <div>
+  <!-- UApp: contexto de Nuxt UI (notificaciones, modales, tooltips). -->
+  <UApp :locale="es">
     <NuxtRouteAnnouncer />
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
     <AvisoInactividad />
-  </div>
+  </UApp>
 </template>
+
+<script setup lang="ts">
+import { es } from '@nuxt/ui/locale'
+</script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ public: true })
+definePageMeta({ public: true, layout: 'publico' })
 
 // Se llega desde el enlace del correo: /restablecer-contrasena?token=...&email=...
 const route = useRoute()
@@ -43,45 +43,47 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <main style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
-    <h1>Nueva contraseña</h1>
-
-    <p v-if="enlaceIncompleto" role="alert" style="color: #b91c1c;">
-      El enlace está incompleto. Solicita uno nuevo desde
-      <NuxtLink to="/olvide-contrasena">recuperar contraseña</NuxtLink>.
-    </p>
-
-    <template v-else-if="restablecida">
-      <p role="status" style="color: #15803d;">Tu contraseña se actualizó correctamente.</p>
-      <NuxtLink to="/login">Iniciar sesión</NuxtLink>
+  <UCard>
+    <template #header>
+      <h1 class="text-lg font-semibold">
+        Nueva contraseña
+      </h1>
     </template>
 
-    <form v-else @submit.prevent="handleSubmit">
-      <p>Cuenta: <strong>{{ email }}</strong></p>
-      <div>
-        <label for="password">Nueva contraseña</label><br>
-        <input id="password" v-model="password" type="password" autocomplete="new-password" required>
-      </div>
-      <div style="margin-top: 0.5rem;">
-        <label for="password_confirmation">Confirmar contraseña</label><br>
-        <input
-          id="password_confirmation"
-          v-model="passwordConfirmation"
-          type="password"
-          autocomplete="new-password"
-          required
-        >
-      </div>
-      <button type="submit" :disabled="loading" style="margin-top: 1rem;">
-        {{ loading ? 'Guardando...' : 'Guardar contraseña' }}
-      </button>
+    <div v-if="enlaceIncompleto" class="space-y-4">
+      <UAlert
+        color="error"
+        variant="subtle"
+        icon="i-lucide-link-2-off"
+        title="El enlace está incompleto."
+        description="Solicita uno nuevo desde la página de recuperación de contraseña."
+      />
+      <UButton to="/olvide-contrasena" label="Recuperar contraseña" block />
+    </div>
 
-      <ul v-if="errores.length" role="alert" style="color: #b91c1c;">
-        <li v-for="mensaje in errores" :key="mensaje">{{ mensaje }}</li>
-      </ul>
-      <p v-if="errores.length">
-        <NuxtLink to="/olvide-contrasena">Solicitar un enlace nuevo</NuxtLink>
+    <div v-else-if="restablecida" class="space-y-4">
+      <UAlert color="success" variant="subtle" icon="i-lucide-check" title="Tu contraseña se actualizó correctamente." />
+      <UButton to="/login" label="Iniciar sesión" block />
+    </div>
+
+    <form v-else class="space-y-4" @submit.prevent="handleSubmit">
+      <p class="text-sm text-muted">
+        Cuenta: <strong class="text-default">{{ email }}</strong>
       </p>
+
+      <UAlert v-for="mensaje in errores" :key="mensaje" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="mensaje" />
+
+      <UFormField label="Nueva contraseña" name="password" required>
+        <UInput v-model="password" type="password" autocomplete="new-password" required class="w-full" />
+      </UFormField>
+      <UFormField label="Confirmar contraseña" name="password_confirmation" required>
+        <UInput v-model="passwordConfirmation" type="password" autocomplete="new-password" required class="w-full" />
+      </UFormField>
+
+      <UButton type="submit" label="Guardar contraseña" :loading="loading" block />
+      <ULink v-if="errores.length" to="/olvide-contrasena" class="block text-center text-sm">
+        Solicitar un enlace nuevo
+      </ULink>
     </form>
-  </main>
+  </UCard>
 </template>

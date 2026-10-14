@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ public: true })
+definePageMeta({ public: true, layout: 'publico' })
 
 const { api } = useApi()
 
@@ -29,24 +29,31 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <main style="max-width: 320px; margin: 4rem auto; font-family: sans-serif;">
-    <h1>Recuperar contraseña</h1>
-    <p>Indica tu correo y te enviaremos un enlace para crear una nueva contraseña.</p>
+  <UCard>
+    <template #header>
+      <h1 class="text-lg font-semibold">
+        Recuperar contraseña
+      </h1>
+      <p class="mt-1 text-sm text-muted">
+        Indica tu correo y te enviaremos un enlace para crear una nueva contraseña.
+      </p>
+    </template>
 
-    <form @submit.prevent="handleSubmit">
-      <label for="email">Correo electrónico</label><br>
-      <input id="email" v-model="email" type="email" autocomplete="username" required>
-      <br>
-      <button type="submit" :disabled="loading" style="margin-top: 1rem;">
-        {{ loading ? 'Enviando...' : 'Enviar enlace' }}
-      </button>
+    <form class="space-y-4" @submit.prevent="handleSubmit">
+      <UAlert v-if="mensaje" color="success" variant="subtle" icon="i-lucide-mail-check" :title="mensaje" />
+      <UAlert v-if="errorMessage" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorMessage" />
+
+      <UFormField label="Correo electrónico" name="email" required>
+        <UInput v-model="email" type="email" autocomplete="username" required class="w-full" />
+      </UFormField>
+
+      <UButton type="submit" label="Enviar enlace" :loading="loading" block />
     </form>
 
-    <p v-if="mensaje" role="status" style="color: #15803d;">{{ mensaje }}</p>
-    <p v-if="errorMessage" role="alert" style="color: #b91c1c;">{{ errorMessage }}</p>
-
-    <p style="margin-top: 2rem;">
-      <NuxtLink to="/login">Volver a iniciar sesión</NuxtLink>
-    </p>
-  </main>
+    <template #footer>
+      <ULink to="/login" class="text-sm">
+        Volver a iniciar sesión
+      </ULink>
+    </template>
+  </UCard>
 </template>

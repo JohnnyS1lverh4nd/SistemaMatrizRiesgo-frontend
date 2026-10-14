@@ -18,6 +18,70 @@ export interface Departamento extends DepartamentoResumen {
   activo: boolean
 }
 
+export interface Proceso {
+  id: number
+  departamento_id: number
+  nombre: string
+  slug: string
+  descripcion: string | null
+  activo: boolean
+  permisos: { crear_matriz: boolean }
+}
+
+export type EstadoMatriz = 'borrador' | 'vigente' | 'archivada'
+
+// MatrizResource: una edición de la matriz de un proceso.
+export interface Matriz {
+  id: number
+  proceso_id: number
+  nombre: string
+  fecha_revision: string
+  estado: EstadoMatriz
+  edicion_anterior_id: number | null
+  publicada_at: string | null
+  archivada_at: string | null
+  created_at: string | null
+  // Calculados por la Policy; solo sirven para mostrar u ocultar acciones.
+  permisos: {
+    editar: boolean
+    publicar: boolean
+    archivar: boolean
+    descartar: boolean
+    clonar: boolean
+  }
+}
+
+// Factores de riesgo y periodicidades: catálogos que se desactivan, no se borran.
+export interface CatalogoActivable {
+  id: number
+  nombre: string
+  slug: string
+  activo: boolean
+}
+
+export interface NivelRiesgo {
+  id: number
+  nombre: string
+  slug: string
+  color: string
+  orden: number
+}
+
+export interface EscalaNivel {
+  id: number
+  tipo: 'probabilidad' | 'impacto'
+  valor: number
+  nombre: string
+  descripcion: string | null
+}
+
+export interface MatrizCalorCelda {
+  id: number
+  probabilidad: number
+  impacto: number
+  nivel_riesgo: NivelRiesgo
+}
+
 // UserResource. El rol solo sirve para adaptar la interfaz: los permisos
 // reales siempre se comprueban en Laravel.
 export interface User {

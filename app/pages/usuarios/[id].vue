@@ -6,10 +6,10 @@ definePageMeta({ middleware: 'admin' })
 const route = useRoute()
 const { api } = useApi()
 const { user: actual, fetchUser } = useAuth()
+const toast = useToast()
 
 const usuario = ref<User | null>(null)
 const errorGeneral = ref<string | null>(null)
-const guardado = ref(false)
 
 onMounted(async () => {
   try {
@@ -22,7 +22,7 @@ onMounted(async () => {
 
 async function alGuardar(actualizado: User) {
   usuario.value = actualizado
-  guardado.value = true
+  toast.add({ title: 'Cambios guardados', color: 'success', icon: 'i-lucide-check' })
 
   // Si el administrador se editó a sí mismo, refresca su nombre en la sesión.
   if (actualizado.id === actual.value?.id) {
@@ -32,17 +32,29 @@ async function alGuardar(actualizado: User) {
 </script>
 
 <template>
-  <main style="max-width: 64rem; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
-    <p><NuxtLink to="/usuarios">← Usuarios</NuxtLink></p>
-    <h1>Editar usuario</h1>
-
-    <p v-if="errorGeneral" role="alert" style="color: #b91c1c;">{{ errorGeneral }}</p>
-    <p v-if="guardado" role="status" style="color: #15803d;">Cambios guardados.</p>
-
-    <template v-if="usuario">
-      <p v-if="!usuario.activo">Este usuario está desactivado y no puede iniciar sesión.</p>
-      <!-- :key fuerza a reiniciar el formulario con los datos guardados -->
-      <UsuarioForm :key="usuario.id" :usuario="usuario" @guardado="alGuardar" />
+  <UDashboardPanel id="editar-usuario">
+    <template #header>
+      <UDashboardNavbar :title="usuario ? `Editar · ${usuario.name}` : 'Editar usuario'">
+        <template #leading>
+          <UButton to="/usuarios" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver a usuarios" />
+        </template>
+      </UDashboardNavbar>
     </template>
-  </main>
+
+    <template #body>
+      <UAlert v-if="errorGeneral" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorGeneral" />
+
+      <template v-if="usuario">
+        <UAlert
+          v-if="!usuario.activo"
+          color="warning"
+          variant="subtle"
+          icon="i-lucide-user-x"
+          title="Este usuario está desactivado y no puede iniciar sesión."
+          class="max-w-lg"
+        />
+        <UsuarioForm :key="usuario.id" :usuario="usuario" @guardado="alGuardar" />
+      </template>
+    </template>
+  </UDashboardPanel>
 </template>

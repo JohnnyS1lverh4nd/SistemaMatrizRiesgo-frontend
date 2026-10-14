@@ -23,7 +23,11 @@ export function mensajeDeErrorApi(error: unknown): string {
       case 401:
         return 'Tu sesión ha expirado. Vuelve a iniciar sesión.'
       case 403:
-        return 'No tienes permiso para realizar esta acción.'
+        // Las Policies devuelven motivos concretos ("Solo se pueden publicar
+        // ediciones en borrador."); el mensaje por defecto de Laravel viene en inglés.
+        return typeof error.data?.message === 'string' && error.data.message !== 'This action is unauthorized.'
+          ? error.data.message
+          : 'No tienes permiso para realizar esta acción.'
       case 404:
         return 'El registro no existe.'
       case 429:

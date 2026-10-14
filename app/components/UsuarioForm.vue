@@ -17,7 +17,7 @@ const form = reactive({
   email: props.usuario?.email ?? '',
   password: '',
   password_confirmation: '',
-  role_id: props.usuario?.role?.id ?? null as number | null,
+  role_id: props.usuario?.role?.id as number | undefined,
   departamento_ids: props.usuario?.departamentos.map(d => d.id) ?? [] as number[],
 })
 
@@ -92,6 +92,9 @@ async function guardar() {
   }
 }
 
+const opcionesRoles = computed(() => roles.value.map(r => ({ label: r.nombre, value: r.id })))
+const opcionesDepartamentos = computed(() => departamentos.value.map(d => ({ label: d.nombre, id: d.id })))
+
 // Errores de departamento_ids.0, departamento_ids.1… se agrupan en un solo campo.
 const erroresDepartamentos = computed(() =>
   Object.entries(errores.value)
@@ -101,67 +104,60 @@ const erroresDepartamentos = computed(() =>
 </script>
 
 <template>
-  <p v-if="cargando">Cargando…</p>
+  <div v-if="cargando" class="text-sm text-muted">
+    Cargando…
+  </div>
 
-  <form v-else class="formulario" novalidate @submit.prevent="guardar">
-    <p v-if="errorGeneral" role="alert" class="error">{{ errorGeneral }}</p>
+  <form v-else class="max-w-lg space-y-4" novalidate @submit.prevent="guardar">
+    <UAlert v-if="errorGeneral" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorGeneral" />
 
-    <div class="campo">
-      <label for="name">Nombre</label>
-      <input id="name" v-model="form.name" type="text" autocomplete="off" :aria-invalid="!!errores.name">
-      <small v-for="mensaje in errores.name" :key="mensaje" class="error">{{ mensaje }}</small>
-    </div>
+    <UFormField label="Nombre" name="name" :error="errores.name?.[0]" required>
+      <UInput v-model="form.name" autocomplete="off" class="w-full" />
+    </UFormField>
 
-    <div class="campo">
-      <label for="email">Correo electrónico</label>
-      <input id="email" v-model="form.email" type="email" autocomplete="off" :aria-invalid="!!errores.email">
-      <small v-for="mensaje in errores.email" :key="mensaje" class="error">{{ mensaje }}</small>
-    </div>
+    <UFormField label="Correo electrónico" name="email" :error="errores.email?.[0]" required>
+      <UInput v-model="form.email" type="email" autocomplete="off" class="w-full" />
+    </UFormField>
 
-    <div class="campo">
-      <label for="password">{{ esEdicion ? 'Nueva contraseña (dejar vacío para no cambiarla)' : 'Contraseña' }}</label>
-      <input id="password" v-model="form.password" type="password" autocomplete="new-password" :aria-invalid="!!errores.password">
-      <small v-for="mensaje in errores.password" :key="mensaje" class="error">{{ mensaje }}</small>
-    </div>
+    <UFormField
+      :label="esEdicion ? 'Nueva contraseña' : 'Contraseña'"
+      :help="esEdicion ? 'Déjela vacía para conservar la actual.' : undefined"
+      name="password"
+      :error="errores.password?.[0]"
+      :required="!esEdicion"
+    >
+      <UInput v-model="form.password" type="password" autocomplete="new-password" class="w-full" />
+    </UFormField>
 
-    <div class="campo">
-      <label for="password_confirmation">Confirmar contraseña</label>
-      <input id="password_confirmation" v-model="form.password_confirmation" type="password" autocomplete="new-password">
-    </div>
+    <UFormField label="Confirmar contraseña" name="password_confirmation">
+      <UInput v-model="form.password_confirmation" type="password" autocomplete="new-password" class="w-full" />
+    </UFormField>
 
-    <div class="campo">
-      <label for="role_id">Rol</label>
-      <select id="role_id" v-model="form.role_id" :aria-invalid="!!errores.role_id">
-        <option :value="null" disabled>Selecciona un rol</option>
-        <option v-for="rol in roles" :key="rol.id" :value="rol.id">{{ rol.nombre }}</option>
-      </select>
-      <small v-for="mensaje in errores.role_id" :key="mensaje" class="error">{{ mensaje }}</small>
-    </div>
+    <UFormField label="Rol" name="role_id" :error="errores.role_id?.[0]" required>
+      <USelect v-model="form.role_id" :items="opcionesRoles" placeholder="Selecciona un rol" class="w-full" />
+    </UFormField>
 
-    <fieldset class="campo">
-      <legend>Departamentos asignados</legend>
-      <p v-if="!departamentos.length">No hay departamentos activos.</p>
-      <label v-for="departamento in departamentos" :key="departamento.id" class="opcion">
-        <input v-model="form.departamento_ids" type="checkbox" :value="departamento.id">
-        {{ departamento.nombre }}
-      </label>
-      <small v-if="asignadosInactivos.length" class="aviso">
-        Al guardar se quitará la asignación a departamentos inactivos:
-        {{ asignadosInactivos.map(d => d.nombre).join(', ') }}.
-      </small>
-      <small v-for="mensaje in erroresDepartamentos" :key="mensaje" class="error">{{ mensaje }}</small>
-    </fieldset>
+    <UFormField
+      label="Departamentos asignados"
+      name="departamento_ids"
+      :error="erroresDepartamentos[0]"
+      help="Los encargados solo acceden a las matrices de sus departamentos."
+    >
+      <p v-if="!opcionesDepartamentos.length" class="text-sm text-muted">
+        No hay departamentos activos.
+      </p>
+      <UCheckboxGroup v-else v-model="form.departamento_ids" :items="opcionesDepartamentos" value-key="id" />
+    </UFormField>
 
-    <button type="submit" :disabled="guardando">
-      {{ guardando ? 'Guardando…' : (esEdicion ? 'Guardar cambios' : 'Crear usuario') }}
-    </button>
+    <UAlert
+      v-if="asignadosInactivos.length"
+      color="warning"
+      variant="subtle"
+      icon="i-lucide-triangle-alert"
+      title="Al guardar se quitará la asignación a departamentos inactivos"
+      :description="asignadosInactivos.map(d => d.nombre).join(', ')"
+    />
+
+    <UButton type="submit" :label="esEdicion ? 'Guardar cambios' : 'Crear usuario'" :loading="guardando" />
   </form>
 </template>
-
-<style scoped>
-.formulario { display: grid; gap: 1rem; max-width: 28rem; }
-.campo { display: grid; gap: 0.25rem; }
-.opcion { display: flex; gap: 0.5rem; align-items: center; }
-.error { color: #b91c1c; }
-.aviso { color: #92400e; }
-</style>
