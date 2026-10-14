@@ -81,6 +81,14 @@ function abrir(riesgo: Riesgo | null) {
   })
 }
 
+// --- Historial de cambios (auditoría) ----------------------------------------
+
+const historial = reactive({ abierto: false, titulo: '', url: null as string | null })
+
+function verHistorial(titulo: string, url: string) {
+  Object.assign(historial, { abierto: true, titulo, url })
+}
+
 // --- Seguimiento (ediciones publicadas) -------------------------------------
 
 const seguimiento = reactive({ abierto: false, riesgo: null as Riesgo | null })
@@ -122,6 +130,14 @@ async function eliminar() {
           />
         </template>
         <template #right>
+          <UButton
+            v-if="matriz"
+            icon="i-lucide-history"
+            label="Historial"
+            color="neutral"
+            variant="ghost"
+            @click="verHistorial(`Historial · ${matriz.nombre}`, `/api/matrices/${matriz.id}/historial`)"
+          />
           <UButton v-if="puedeEditar" icon="i-lucide-plus" label="Nuevo riesgo" @click="abrir(null)" />
         </template>
       </UDashboardNavbar>
@@ -241,6 +257,14 @@ async function eliminar() {
               @click="abrir(row.original)"
             />
             <UButton
+              icon="i-lucide-history"
+              aria-label="Historial de cambios del riesgo"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              @click="verHistorial(`Historial · Riesgo ${row.original.orden}`, `/api/riesgos/${row.original.id}/historial`)"
+            />
+            <UButton
               v-if="row.original.permisos.eliminar"
               icon="i-lucide-trash-2"
               aria-label="Eliminar riesgo"
@@ -263,6 +287,8 @@ async function eliminar() {
       />
 
       <!-- Al registrar o anular puede cambiar el estado del tratamiento: se recarga la tabla. -->
+      <HistorialPanel v-model:open="historial.abierto" :titulo="historial.titulo" :url="historial.url" />
+
       <SeguimientoPanel v-model:open="seguimiento.abierto" :riesgo="seguimiento.riesgo" @cambiado="recargar" />
 
       <ConfirmacionModal

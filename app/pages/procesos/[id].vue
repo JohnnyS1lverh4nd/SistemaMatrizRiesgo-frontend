@@ -168,6 +168,14 @@ async function ejecutar() {
         </template>
         <template #right>
           <UButton
+            v-if="ediciones.filter(e => e.estado !== 'borrador').length >= 2"
+            :to="`/comparar?proceso=${procesoId}`"
+            icon="i-lucide-git-compare"
+            label="Comparar ediciones"
+            color="neutral"
+            variant="ghost"
+          />
+          <UButton
             v-if="proceso?.permisos.crear_matriz"
             icon="i-lucide-plus"
             label="Nueva edición"

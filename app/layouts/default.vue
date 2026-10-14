@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { ROL_ADMINISTRADOR } from '~/types/api'
+import { ROL_ADMINISTRADOR, ROL_AUDITOR } from '~/types/api'
 
 // La navegación solo oculta lo que el rol no usa; la API decide los permisos.
 const { user, logout } = useAuth()
 const router = useRouter()
 
 const esAdministrador = computed(() => user.value?.role?.slug === ROL_ADMINISTRADOR)
+const veAuditoria = computed(() => esAdministrador.value || user.value?.role?.slug === ROL_AUDITOR)
 
 const principal = computed<NavigationMenuItem[]>(() => [
   { label: 'Inicio', icon: 'i-lucide-house', to: '/' },
   { label: 'Matrices de riesgo', icon: 'i-lucide-table-2', to: '/matrices' },
+  { label: 'Reportes', icon: 'i-lucide-file-search', to: '/reportes' },
   ...(esAdministrador.value
     ? [
         { label: 'Departamentos', icon: 'i-lucide-building-2', to: '/departamentos' },
@@ -18,6 +20,7 @@ const principal = computed<NavigationMenuItem[]>(() => [
         { label: 'Usuarios', icon: 'i-lucide-users', to: '/usuarios' },
       ]
     : []),
+  ...(veAuditoria.value ? [{ label: 'Auditoría', icon: 'i-lucide-scroll-text', to: '/auditoria' }] : []),
 ])
 
 const cuenta = computed<NavigationMenuItem[]>(() => [

@@ -165,4 +165,85 @@ export interface Paginado<T> {
   }
 }
 
+// GET /api/dashboard (solo ediciones vigentes, en el alcance del usuario).
+export interface DatosDashboard {
+  total_riesgos: number
+  por_nivel: { nivel: NivelRiesgo, total: number }[]
+  mapa_calor: { probabilidad: number, impacto: number, nivel: NivelRiesgo, total: number }[]
+  por_estado_tratamiento: Record<EstadoTratamiento, number>
+  prioritarios_pendientes: number
+  seguimientos_atrasados: number
+  por_departamento: {
+    departamento: { id: number, nombre: string, direccion: string | null }
+    total: number
+    por_nivel: Record<string, number>
+    procesos_con_vigente: number
+    procesos_sin_vigente: number
+  }[]
+}
+
+// GET /api/reportes/riesgos
+export interface FilaReporteRiesgo {
+  id: number
+  orden: number
+  actividad: string
+  descripcion: string
+  factores: { id: number, nombre: string }[]
+  probabilidad: number | null
+  impacto: number | null
+  nivel: NivelRiesgo | null
+  ajustado: boolean
+  responsable: string | null
+  periodicidad: string | null
+  estado_tratamiento: EstadoTratamiento
+  seguimiento: { ultimo: string | null, vence: string | null, atrasado: boolean }
+  matriz: { id: number, nombre: string, estado: EstadoMatriz, fecha_revision: string }
+  proceso: { id: number, nombre: string }
+  departamento: { id: number, nombre: string, direccion: string | null }
+}
+
+// GET /api/matrices/{base}/comparar/{nueva}
+export interface ResumenRiesgoComparado {
+  id: number
+  orden: number
+  descripcion: string
+  nivel: NivelRiesgo | null
+}
+
+export interface ComparacionEdiciones {
+  base: { id: number, nombre: string, fecha_revision: string }
+  nueva: { id: number, nombre: string, fecha_revision: string }
+  agregados: ResumenRiesgoComparado[]
+  cerrados: ResumenRiesgoComparado[]
+  cambios_nivel: {
+    riesgo_base_id: number
+    riesgo_nuevo_id: number
+    descripcion: string
+    probabilidad_anterior: number | null
+    impacto_anterior: number | null
+    probabilidad_nueva: number | null
+    impacto_nuevo: number | null
+    nivel_anterior: NivelRiesgo | null
+    nivel_nuevo: NivelRiesgo | null
+    tendencia: 'sube' | 'baja'
+  }[]
+  resumen: { agregados: number, cerrados: number, suben: number, bajan: number, sin_cambio: number }
+}
+
 export const ROL_ADMINISTRADOR = 'administrador'
+export const ROL_AUDITOR = 'auditor'
+
+// AuditoriaResource: entrada del registro de auditoría (solo lectura).
+export interface RegistroAuditoria {
+  id: number
+  fecha: string
+  evento: string
+  entidad: string | null
+  entidad_id: number | null
+  usuario: { id: number, name: string } | null
+  ip: string | null
+  user_agent: string | null
+  descripcion: string | null
+  valores_anteriores: Record<string, unknown> | null
+  valores_nuevos: Record<string, unknown> | null
+}
