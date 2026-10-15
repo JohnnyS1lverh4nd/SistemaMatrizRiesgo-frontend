@@ -1,2 +1,74 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/*
+ * Colores institucionales de INFOTEP, tomados del logo:
+ *   azul marino #121462 (principal), dorado #ecb53b (acento), verde #4a8a2c (éxito).
+ * Paletas generadas en OKLCH con el color del logo exacto en un tono de cada escala.
+ * Los niveles de riesgo (Bajo/Moderado/Alto/Crítico) tienen sus propios colores
+ * en el catálogo y no dependen del tema.
+ */
+@theme static {
+  /* infotep: #121462 del logo en el tono 900 */
+  --color-infotep-50: #f1f4fe;
+  --color-infotep-100: #e1e8fe;
+  --color-infotep-200: #c5d3ff;
+  --color-infotep-300: #a4b8fe;
+  --color-infotep-400: #8299f1;
+  --color-infotep-500: #667bd1;
+  --color-infotep-600: #4b5eb1;
+  --color-infotep-700: #344393;
+  --color-infotep-800: #212c7a;
+  --color-infotep-900: #121462;
+  --color-infotep-950: #0a0152;
+  /* dorado: #ecb53b del logo en el tono 400 */
+  --color-dorado-50: #fffbeb;
+  --color-dorado-100: #fff3d1;
+  --color-dorado-200: #ffeac4;
+  --color-dorado-300: #ffd175;
+  --color-dorado-400: #ecb53b;
+  --color-dorado-500: #cb9606;
+  --color-dorado-600: #a77b05;
+  --color-dorado-700: #866101;
+  --color-dorado-800: #694c03;
+  --color-dorado-900: #4f3902;
+  --color-dorado-950: #3a2900;
+  /* verde: #4a8a2c del logo en el tono 600 */
+  --color-verde-50: #eeffe8;
+  --color-verde-100: #dbfad0;
+  --color-verde-200: #beeeac;
+  --color-verde-300: #99dd7e;
+  --color-verde-400: #7fc264;
+  --color-verde-500: #64a649;
+  --color-verde-600: #4a8a2c;
+  --color-verde-700: #307007;
+  --color-verde-800: #235801;
+  --color-verde-900: #194201;
+  --color-verde-950: #103000;
+}
+
+/* Modo claro: el azul marino del logo, tal cual, como color principal. */
+:root {
+  --ui-primary: var(--ui-color-primary-900);
+  /* Tonos 600/700: contraste suficiente sobre blanco (WCAG AA). */
+  --ui-secondary: var(--ui-color-secondary-600);
+  --ui-success: var(--ui-color-success-700);
+}
+
+/*
+ * Modo oscuro: la misma identidad sobre negro. El azul se aclara para que se
+ * lea sobre fondo negro; los grises tienden al negro puro.
+ */
+.dark {
+  --ui-primary: var(--ui-color-primary-400);
+  --ui-secondary: var(--ui-color-secondary-400);
+  --ui-success: var(--ui-color-success-400);
+
+  --ui-bg: #000000;
+  --ui-bg-muted: #0b0b0f;
+  --ui-bg-elevated: #121218;
+  --ui-bg-accented: #1c1c24;
+  --ui-border: #23232c;
+  --ui-border-muted: #18181f;
+  --ui-border-accented: #30303b;
+}

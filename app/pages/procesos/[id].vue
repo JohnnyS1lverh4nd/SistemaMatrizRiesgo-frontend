@@ -30,9 +30,12 @@ onMounted(async () => {
 
 const vigente = computed(() => ediciones.value.find(e => e.estado === 'vigente'))
 
-// La importación solo carga procesos sin historial (la API también lo exige).
+// El botón se muestra siempre al Administrador; la importación solo carga
+// procesos sin historial (la API también lo exige), así que con ediciones
+// queda desactivado y explica por qué.
 const importacionAbierta = ref(false)
-const puedeImportar = computed(() => proceso.value?.permisos.importar && !cargando.value && ediciones.value.length === 0)
+const mostrarImportar = computed(() => proceso.value?.permisos.importar && !cargando.value)
+const importacionBloqueada = computed(() => ediciones.value.length > 0)
 
 const columnas: TableColumn<Matriz>[] = [
   { accessorKey: 'nombre', header: 'Edición' },
@@ -179,14 +182,23 @@ async function ejecutar() {
             color="neutral"
             variant="ghost"
           />
-          <UButton
-            v-if="puedeImportar"
-            icon="i-lucide-file-spreadsheet"
-            label="Importar desde Excel"
-            color="neutral"
-            variant="soft"
-            @click="importacionAbierta = true"
-          />
+          <UTooltip
+            v-if="mostrarImportar"
+            :disabled="!importacionBloqueada"
+            text="Solo se puede importar en un proceso sin ediciones. Para este proceso, cree una edición nueva o clone una existente."
+          >
+            <!-- Un botón desactivado no recibe el ratón: el span muestra el aviso. -->
+            <span class="inline-flex" :tabindex="importacionBloqueada ? 0 : undefined">
+              <UButton
+                icon="i-lucide-file-spreadsheet"
+                label="Importar desde Excel"
+                color="neutral"
+                variant="soft"
+                :disabled="importacionBloqueada"
+                @click="importacionAbierta = true"
+              />
+            </span>
+          </UTooltip>
           <UButton
             v-if="proceso?.permisos.crear_matriz"
             icon="i-lucide-plus"

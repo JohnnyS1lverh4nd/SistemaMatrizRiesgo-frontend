@@ -15,10 +15,13 @@ RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY . .
 # Mismo dominio que la API: rutas relativas ("/api/...").
 ENV NUXT_PUBLIC_API_BASE=""
-RUN npm run generate
+RUN npm run generate \
+    && node scripts/csp-nginx.mjs .output/public > /app/00-csp.conf
 
 # --- Etapa 2: solo Nginx y los archivos generados ---------------------------------
 FROM nginx:1.28-alpine
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY --from=build /app/.output/public /usr/share/nginx/html
+# Política CSP con los hashes de los scripts en línea de este build ($csp).
+COPY --from=build /app/00-csp.conf /etc/nginx/conf.d/00-csp.conf

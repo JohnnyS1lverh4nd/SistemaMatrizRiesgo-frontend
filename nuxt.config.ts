@@ -15,6 +15,9 @@ export default defineNuxtConfig({
     fallbackToApi: false,
     clientBundle: {
       scan: true,
+      // Íconos que Nuxt UI usa internamente (interruptor de modo claro/oscuro):
+      // no aparecen en nuestro código, así que el escaneo no los detecta.
+      icons: ['lucide:sun', 'lucide:moon'],
     },
   },
   runtimeConfig: {

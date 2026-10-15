@@ -40,7 +40,7 @@ async function cerrarSesion() {
   <UDashboardGroup>
     <UDashboardSidebar collapsible resizable :default-size="18">
       <template #header="{ collapsed }">
-        <UIcon name="i-lucide-shield-alert" class="size-5 shrink-0 text-primary" />
+        <UIcon name="i-lucide-shield-alert" class="size-5 shrink-0 text-secondary" />
         <span v-if="!collapsed" class="truncate font-semibold">Matrices de Riesgo</span>
       </template>
 
@@ -54,6 +54,11 @@ async function cerrarSesion() {
           <p v-if="!collapsed && user" class="truncate text-xs text-muted">
             {{ user.name }} · {{ user.role?.nombre ?? 'Sin rol' }}
           </p>
+          <!-- Modo claro / oscuro: la preferencia se guarda en el navegador. -->
+          <div class="flex items-center gap-2 px-2.5 py-1.5" :class="collapsed ? 'justify-center px-0' : ''">
+            <UColorModeSwitch />
+            <span v-if="!collapsed" class="text-sm text-muted">Modo oscuro</span>
+          </div>
           <UButton
             icon="i-lucide-log-out"
             :label="collapsed ? undefined : 'Cerrar sesión'"
