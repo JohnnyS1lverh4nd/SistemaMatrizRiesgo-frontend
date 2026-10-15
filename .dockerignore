@@ -1,0 +1,14 @@
+# La imagen se construye desde el código; nada generado ni local.
+node_modules
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+.env
+.env.*
+.git
+.idea
+.vscode
+*.log
