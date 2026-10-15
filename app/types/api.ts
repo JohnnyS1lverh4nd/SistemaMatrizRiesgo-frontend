@@ -25,7 +25,7 @@ export interface Proceso {
   slug: string
   descripcion: string | null
   activo: boolean
-  permisos: { crear_matriz: boolean }
+  permisos: { crear_matriz: boolean, importar: boolean }
 }
 
 export type EstadoMatriz = 'borrador' | 'vigente' | 'archivada'
@@ -145,6 +145,22 @@ export interface UsuarioActual {
   meta: {
     sesion_minutos: number
   }
+}
+
+// POST /api/procesos/{id}/importacion/vista-previa (PlanImportacion::resumen)
+export interface ResumenImportacion {
+  archivo: string
+  valido: boolean
+  ediciones: {
+    hoja: string
+    nombre: string
+    fecha_revision: string | null
+    riesgos: number
+    seguimientos: number
+    ajustes: number
+  }[]
+  errores: string[]
+  avisos: string[]
 }
 
 export interface Item<T> {

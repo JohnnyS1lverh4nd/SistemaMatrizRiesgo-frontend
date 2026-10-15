@@ -89,18 +89,22 @@ const historial = reactive({ abierto: false, titulo: '', url: null as string | n
 
 const exportando = ref(false)
 
-async function exportarPdf() {
+type FormatoExportacion = 'pdf' | 'excel'
+
+const EXTENSIONES: Record<FormatoExportacion, string> = { pdf: 'pdf', excel: 'xlsx' }
+
+async function exportar(formato: FormatoExportacion) {
   if (!matriz.value) {
     return
   }
   exportando.value = true
   try {
     // Petición autenticada: misma sesión y permisos que el resto de la API.
-    const archivo = await api<Blob>(`/api/matrices/${matriz.value.id}/exportar/pdf`, { responseType: 'blob' })
+    const archivo = await api<Blob>(`/api/matrices/${matriz.value.id}/exportar/${formato}`, { responseType: 'blob' })
     const url = URL.createObjectURL(archivo)
     const enlace = document.createElement('a')
     enlace.href = url
-    enlace.download = `Matriz de riesgos - ${proceso.value?.nombre ?? ''} - ${matriz.value.nombre}.pdf`
+    enlace.download = `Matriz de riesgos - ${proceso.value?.nombre ?? ''} - ${matriz.value.nombre}.${EXTENSIONES[formato]}`
     enlace.click()
     URL.revokeObjectURL(url)
   } catch (e) {
@@ -109,6 +113,11 @@ async function exportarPdf() {
     exportando.value = false
   }
 }
+
+const opcionesExportacion = [
+  { label: 'PDF', icon: 'i-lucide-file-text', onSelect: () => exportar('pdf') },
+  { label: 'Excel', icon: 'i-lucide-file-spreadsheet', onSelect: () => exportar('excel') },
+]
 
 function verHistorial(titulo: string, url: string) {
   Object.assign(historial, { abierto: true, titulo, url })
@@ -155,15 +164,16 @@ async function eliminar() {
           />
         </template>
         <template #right>
-          <UButton
-            v-if="matriz"
-            icon="i-lucide-file-down"
-            label="Exportar PDF"
-            color="neutral"
-            variant="ghost"
-            :loading="exportando"
-            @click="exportarPdf"
-          />
+          <UDropdownMenu v-if="matriz" :items="opcionesExportacion">
+            <UButton
+              icon="i-lucide-file-down"
+              label="Exportar"
+              trailing-icon="i-lucide-chevron-down"
+              color="neutral"
+              variant="ghost"
+              :loading="exportando"
+            />
+          </UDropdownMenu>
           <UButton
             v-if="matriz"
             icon="i-lucide-history"

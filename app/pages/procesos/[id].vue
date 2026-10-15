@@ -30,6 +30,10 @@ onMounted(async () => {
 
 const vigente = computed(() => ediciones.value.find(e => e.estado === 'vigente'))
 
+// La importación solo carga procesos sin historial (la API también lo exige).
+const importacionAbierta = ref(false)
+const puedeImportar = computed(() => proceso.value?.permisos.importar && !cargando.value && ediciones.value.length === 0)
+
 const columnas: TableColumn<Matriz>[] = [
   { accessorKey: 'nombre', header: 'Edición' },
   { accessorKey: 'fecha_revision', header: 'Fecha de revisión' },
@@ -176,6 +180,14 @@ async function ejecutar() {
             variant="ghost"
           />
           <UButton
+            v-if="puedeImportar"
+            icon="i-lucide-file-spreadsheet"
+            label="Importar desde Excel"
+            color="neutral"
+            variant="soft"
+            @click="importacionAbierta = true"
+          />
+          <UButton
             v-if="proceso?.permisos.crear_matriz"
             icon="i-lucide-plus"
             label="Nueva edición"
@@ -226,6 +238,14 @@ async function ejecutar() {
         :metodo="formulario.metodo"
         :valores-iniciales="formulario.valores"
         @guardado="recargar"
+      />
+
+      <ImportacionExcelModal
+        v-if="proceso"
+        v-model:open="importacionAbierta"
+        :proceso-id="procesoId"
+        :proceso-nombre="proceso.nombre"
+        @importado="recargar"
       />
 
       <ConfirmacionModal
