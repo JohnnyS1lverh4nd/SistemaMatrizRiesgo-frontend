@@ -9,6 +9,7 @@ export const EVENTOS_AUDITORIA: Record<string, { label: string, color: 'neutral'
   archivado: { label: 'Archivado', color: 'neutral' },
   clonado: { label: 'Nueva edición', color: 'success' },
   anulado: { label: 'Anulado', color: 'warning' },
+  exportado: { label: 'Exportado', color: 'neutral' },
   login: { label: 'Inicio de sesión', color: 'neutral' },
   login_fallido: { label: 'Inicio de sesión fallido', color: 'error' },
   logout: { label: 'Cierre de sesión', color: 'neutral' },

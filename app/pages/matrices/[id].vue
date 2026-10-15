@@ -85,6 +85,31 @@ function abrir(riesgo: Riesgo | null) {
 
 const historial = reactive({ abierto: false, titulo: '', url: null as string | null })
 
+// --- Exportación (formato institucional RT-01-NI-ONA-156) -------------------
+
+const exportando = ref(false)
+
+async function exportarPdf() {
+  if (!matriz.value) {
+    return
+  }
+  exportando.value = true
+  try {
+    // Petición autenticada: misma sesión y permisos que el resto de la API.
+    const archivo = await api<Blob>(`/api/matrices/${matriz.value.id}/exportar/pdf`, { responseType: 'blob' })
+    const url = URL.createObjectURL(archivo)
+    const enlace = document.createElement('a')
+    enlace.href = url
+    enlace.download = `Matriz de riesgos - ${proceso.value?.nombre ?? ''} - ${matriz.value.nombre}.pdf`
+    enlace.click()
+    URL.revokeObjectURL(url)
+  } catch (e) {
+    toast.add({ title: mensajeDeErrorApi(e), color: 'error', icon: 'i-lucide-circle-alert' })
+  } finally {
+    exportando.value = false
+  }
+}
+
 function verHistorial(titulo: string, url: string) {
   Object.assign(historial, { abierto: true, titulo, url })
 }
@@ -130,6 +155,15 @@ async function eliminar() {
           />
         </template>
         <template #right>
+          <UButton
+            v-if="matriz"
+            icon="i-lucide-file-down"
+            label="Exportar PDF"
+            color="neutral"
+            variant="ghost"
+            :loading="exportando"
+            @click="exportarPdf"
+          />
           <UButton
             v-if="matriz"
             icon="i-lucide-history"
