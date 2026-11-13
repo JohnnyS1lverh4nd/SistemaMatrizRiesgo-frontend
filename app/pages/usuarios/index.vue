@@ -54,11 +54,11 @@ onMounted(cargar)
 <template>
   <UDashboardPanel id="usuarios">
     <template #header>
-      <UDashboardNavbar title="Usuarios">
+      <EncabezadoPanel title="Usuarios">
         <template #right>
           <UButton to="/usuarios/nuevo" icon="i-lucide-user-plus" label="Nuevo usuario" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

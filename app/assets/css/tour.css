@@ -1,0 +1,110 @@
+/*
+ * Recorrido guiado (Driver.js) con la identidad INFOTEP. Se carga junto con
+ * driver.css solo al iniciar el recorrido (useRecorridoGuiado), después de ella, para
+ * poder sobrescribirla. Usa las variables de Nuxt UI: sigue el modo oscuro.
+ */
+.driver-popover.tour-infotep {
+  --tour-fondo: var(--ui-bg);
+
+  font-family: inherit;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius, 0.5rem);
+  background-color: var(--tour-fondo);
+  color: var(--ui-text);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+
+.dark .driver-popover.tour-infotep {
+  --tour-fondo: var(--ui-bg-elevated);
+}
+
+.tour-infotep .driver-popover-title {
+  font-size: 1rem;
+  color: var(--ui-text-highlighted);
+}
+
+.tour-infotep .driver-popover-description {
+  font-size: 0.875rem;
+  color: var(--ui-text-toned);
+}
+
+.tour-infotep .driver-popover-progress-text {
+  color: var(--ui-text-muted);
+  font-size: 0.75rem;
+}
+
+.tour-infotep .driver-popover-close-btn {
+  color: var(--ui-text-dimmed);
+}
+
+.tour-infotep .driver-popover-close-btn:hover,
+.tour-infotep .driver-popover-close-btn:focus-visible {
+  color: var(--ui-text-highlighted);
+}
+
+.tour-infotep .driver-popover-footer {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tour-infotep .driver-popover-footer-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--ui-border-accented);
+  border-radius: calc(var(--ui-radius, 0.5rem) * 0.75);
+  background-color: var(--tour-fondo);
+  color: var(--ui-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-shadow: none;
+}
+
+.tour-infotep .driver-popover-footer-btn:hover,
+.tour-infotep .driver-popover-footer-btn:focus-visible {
+  background-color: var(--ui-bg-accented);
+}
+
+.tour-infotep .driver-popover-footer-btn:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+/* Siguiente / Finalizar: botón principal. */
+.tour-infotep .driver-popover-next-btn {
+  border-color: var(--ui-primary);
+  background-color: var(--ui-primary);
+  color: var(--ui-bg);
+}
+
+.tour-infotep .driver-popover-next-btn:hover,
+.tour-infotep .driver-popover-next-btn:focus-visible {
+  background-color: var(--ui-primary);
+  opacity: 0.9;
+}
+
+/* "Saltar recorrido": enlace discreto a la izquierda. */
+.tour-infotep .tour-saltar {
+  all: unset;
+  cursor: pointer;
+  color: var(--ui-text-muted);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tour-infotep .tour-saltar:hover,
+.tour-infotep .tour-saltar:focus-visible {
+  color: var(--ui-text-highlighted);
+}
+
+.tour-infotep .tour-saltar:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+/* La flecha toma el color del fondo del popover (driver.css la pone blanca). */
+.tour-infotep .driver-popover-arrow-side-left { border-left-color: var(--tour-fondo); }
+.tour-infotep .driver-popover-arrow-side-right { border-right-color: var(--tour-fondo); }
+.tour-infotep .driver-popover-arrow-side-top { border-top-color: var(--tour-fondo); }
+.tour-infotep .driver-popover-arrow-side-bottom { border-bottom-color: var(--tour-fondo); }

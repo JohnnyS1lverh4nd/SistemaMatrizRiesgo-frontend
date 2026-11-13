@@ -44,11 +44,11 @@ async function alternarEstado(departamento: Departamento) {
 <template>
   <UDashboardPanel id="departamentos">
     <template #header>
-      <UDashboardNavbar title="Departamentos">
+      <EncabezadoPanel title="Departamentos">
         <template #right>
           <UButton icon="i-lucide-plus" label="Nuevo departamento" @click="nuevo" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

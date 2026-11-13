@@ -17,7 +17,7 @@ const matriz = useTemplateRef<{ refrescar: () => Promise<void> }>('matriz')
 <template>
   <UDashboardPanel id="catalogos">
     <template #header>
-      <UDashboardNavbar title="Catálogos" />
+      <EncabezadoPanel title="Catálogos" />
     </template>
 
     <template #body>

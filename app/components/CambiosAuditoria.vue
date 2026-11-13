@@ -2,10 +2,13 @@
 import type { RegistroAuditoria } from '~/types/api'
 
 // Campos que cambiaron en un registro de auditoría: "antes → después".
-const props = defineProps<{ registro: RegistroAuditoria }>()
+// Sirve para la auditoría completa y para el historial de movimientos.
+const props = defineProps<{
+  registro: Pick<RegistroAuditoria, 'descripcion'> & Partial<Pick<RegistroAuditoria, 'valores_anteriores' | 'valores_nuevos'>>
+}>()
 
 // Campos técnicos que no aportan a quien lee el historial.
-const OCULTOS = new Set(['id', 'deleted_at', 'matriz_id', 'riesgo_id', 'proceso_id', 'user_id', 'orden', 'ruta', 'sha256'])
+const OCULTOS = new Set(['id', 'deleted_at', 'matriz_id', 'riesgo_id', 'proceso_id', 'seguimiento_id', 'user_id', 'orden', 'ruta', 'sha256'])
 
 const filas = computed(() => {
   const antes = props.registro.valores_anteriores ?? {}

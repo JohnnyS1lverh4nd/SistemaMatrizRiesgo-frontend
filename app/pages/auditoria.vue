@@ -77,7 +77,7 @@ function fechaHora(iso: string) {
 <template>
   <UDashboardPanel id="auditoria">
     <template #header>
-      <UDashboardNavbar title="Auditoría" />
+      <EncabezadoPanel title="Auditoría" />
     </template>
 
     <template #body>

@@ -16,8 +16,11 @@ export interface DepartamentoResumen {
 export interface Departamento extends DepartamentoResumen {
   direccion: string | null
   activo: boolean
+  // Calculado por la API para el usuario actual; la API vuelve a comprobarlo.
+  permisos: { crear_proceso: boolean }
 }
 
+// Un proceso tiene su propia matriz de riesgos, versionada en ediciones (Matriz).
 export interface Proceso {
   id: number
   departamento_id: number
@@ -25,7 +28,7 @@ export interface Proceso {
   slug: string
   descripcion: string | null
   activo: boolean
-  permisos: { crear_matriz: boolean, importar: boolean }
+  permisos: { editar: boolean, crear_matriz: boolean, importar: boolean }
 }
 
 export type EstadoMatriz = 'borrador' | 'vigente' | 'archivada'
@@ -130,11 +133,17 @@ export interface Seguimiento {
 
 // UserResource. El rol solo sirve para adaptar la interfaz: los permisos
 // reales siempre se comprueban en Laravel.
+// null = nunca hizo ni omitió el recorrido: se le invita al entrar.
+export type EstadoTour = 'completado' | 'omitido'
+
 export interface User {
   id: number
   name: string
   email: string
   activo: boolean
+  created_at: string | null
+  // Solo en el usuario de la sesión (GET /api/user): estado del recorrido guiado.
+  tour?: { estado: EstadoTour | null, actualizado_at: string | null }
   role: Role | null
   departamentos: DepartamentoResumen[]
 }
@@ -248,6 +257,38 @@ export interface ComparacionEdiciones {
 
 export const ROL_ADMINISTRADOR = 'administrador'
 export const ROL_AUDITOR = 'auditor'
+export const ROL_ENCARGADO_DEPARTAMENTO = 'encargado-departamento'
+export const ROL_ENCARGADO_SEGUIMIENTO = 'encargado-seguimiento'
+
+// Quién usa el historial de movimientos (AuditoriaPolicy::verMovimientos).
+export const ROLES_HISTORIAL = [ROL_ADMINISTRADOR, ROL_ENCARGADO_DEPARTAMENTO, ROL_ENCARGADO_SEGUIMIENTO]
+
+// MovimientoResource: un movimiento del historial por área. Los valores
+// anteriores y nuevos solo vienen en el detalle (GET /api/movimientos/{id}).
+export interface Movimiento {
+  id: number
+  fecha: string
+  evento: string
+  entidad: string | null
+  entidad_id: number | null
+  descripcion: string | null
+  usuario: { id: number, name: string } | null
+  departamento: { id: number, nombre: string } | null
+  proceso: { id: number, nombre: string } | null
+  matriz: { id: number, nombre: string, descartada: boolean } | null
+  valores_anteriores?: Record<string, unknown> | null
+  valores_nuevos?: Record<string, unknown> | null
+}
+
+// GET /api/movimientos/opciones: valores de los filtros dentro del alcance.
+export interface OpcionesMovimientos {
+  usuarios: { id: number, name: string }[]
+  departamentos: { id: number, nombre: string }[]
+  procesos: { id: number, nombre: string, departamento_id: number }[]
+  matrices: { id: number, nombre: string, proceso_id: number }[]
+  eventos: string[]
+  entidades: string[]
+}
 
 // AuditoriaResource: entrada del registro de auditoría (solo lectura).
 export interface RegistroAuditoria {

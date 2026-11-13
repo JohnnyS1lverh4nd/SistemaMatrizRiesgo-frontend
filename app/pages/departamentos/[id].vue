@@ -61,7 +61,7 @@ async function alternarEstado(proceso: Proceso) {
 <template>
   <UDashboardPanel id="procesos">
     <template #header>
-      <UDashboardNavbar :title="departamento ? `Procesos · ${departamento.nombre}` : 'Procesos'">
+      <EncabezadoPanel :title="departamento ? `Procesos · ${departamento.nombre}` : 'Procesos'">
         <template #leading>
           <UButton to="/departamentos" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver a departamentos" />
         </template>
@@ -73,7 +73,7 @@ async function alternarEstado(proceso: Proceso) {
             @click="nuevo"
           />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

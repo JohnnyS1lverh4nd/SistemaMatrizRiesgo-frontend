@@ -57,11 +57,11 @@ const opciones = computed(() => ediciones.value.map(e => ({ label: `${e.nombre} 
 <template>
   <UDashboardPanel id="comparar">
     <template #header>
-      <UDashboardNavbar :title="proceso ? `Comparar ediciones · ${proceso.nombre}` : 'Comparar ediciones'">
+      <EncabezadoPanel :title="proceso ? `Comparar ediciones · ${proceso.nombre}` : 'Comparar ediciones'">
         <template #leading>
           <UButton :to="`/procesos/${procesoId}`" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver al proceso" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

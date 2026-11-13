@@ -56,11 +56,8 @@ function reporte(extra: Record<string, string | number>) {
 <template>
   <UDashboardPanel id="inicio">
     <template #header>
-      <UDashboardNavbar title="Inicio">
-        <template #right>
-          <UButton to="/reportes" icon="i-lucide-file-search" label="Reporte de riesgos" color="neutral" variant="ghost" />
-        </template>
-      </UDashboardNavbar>
+      <!-- Reportes está en el menú lateral: aquí no se repite el acceso. -->
+      <EncabezadoPanel title="Inicio" />
     </template>
 
     <template #body>

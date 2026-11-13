@@ -161,7 +161,7 @@ function fecha(iso: string | null) {
 <template>
   <UDashboardPanel id="reportes">
     <template #header>
-      <UDashboardNavbar title="Reporte de riesgos" />
+      <EncabezadoPanel title="Reporte de riesgos" />
     </template>
 
     <template #body>

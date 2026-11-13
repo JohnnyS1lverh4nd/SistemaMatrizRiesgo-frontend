@@ -153,7 +153,7 @@ async function eliminar() {
 <template>
   <UDashboardPanel id="matriz">
     <template #header>
-      <UDashboardNavbar :title="matriz ? `Matriz de riesgos · ${matriz.nombre}` : 'Matriz de riesgos'">
+      <EncabezadoPanel :title="matriz ? `Matriz de riesgos · ${matriz.nombre}` : 'Matriz de riesgos'">
         <template #leading>
           <UButton
             :to="proceso ? `/procesos/${proceso.id}` : '/matrices'"
@@ -184,7 +184,7 @@ async function eliminar() {
           />
           <UButton v-if="puedeEditar" icon="i-lucide-plus" label="Nuevo riesgo" @click="abrir(null)" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

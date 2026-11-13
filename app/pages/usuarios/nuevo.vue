@@ -12,11 +12,11 @@ async function alGuardar() {
 <template>
   <UDashboardPanel id="nuevo-usuario">
     <template #header>
-      <UDashboardNavbar title="Nuevo usuario">
+      <EncabezadoPanel title="Nuevo usuario">
         <template #leading>
           <UButton to="/usuarios" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver a usuarios" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

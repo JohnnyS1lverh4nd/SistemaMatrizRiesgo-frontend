@@ -61,6 +61,33 @@ const CAMPOS: Record<string, string> = {
   nivel_riesgo_id: 'Nivel de riesgo',
   color: 'Color',
   direccion: 'Dirección',
+  slug:'Identificador',
+  departamento_id: 'Departamento',
+  creado_por_id: 'Creado por (usuario)',
+  edicion_anterior_id: 'Edición de origen',
+  riesgo_origen_id: 'Riesgo de origen',
+  publicada_at: 'Publicada el',
+  archivada_at: 'Archivada el',
+  estado_tratamiento_anterior: 'Tratamiento (antes)',
+  estado_tratamiento_nuevo: 'Tratamiento (después)',
+  anulado_at: 'Anulado el',
+  anulado_por_id: 'Anulado por (usuario)',
+  nombre_original: 'Archivo',
+  mime: 'Tipo de archivo',
+  tamano: 'Tamaño (bytes)',
+}
+
+/**
+ * Descripción breve de un movimiento: "Riesgo #12 · Actualizado".
+ * El registro afectado se identifica por su tipo y su número interno.
+ */
+export function registroAfectado(entidad: string | null, entidadId: number | null): string {
+  if (!entidad) {
+    return '—'
+  }
+
+  const nombre = ENTIDADES_AUDITORIA[entidad] ?? entidad
+  return entidadId ? `${nombre} #${entidadId}` : nombre
 }
 
 export function etiquetaCampo(campo: string): string {

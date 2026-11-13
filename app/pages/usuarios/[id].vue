@@ -34,11 +34,11 @@ async function alGuardar(actualizado: User) {
 <template>
   <UDashboardPanel id="editar-usuario">
     <template #header>
-      <UDashboardNavbar :title="usuario ? `Editar · ${usuario.name}` : 'Editar usuario'">
+      <EncabezadoPanel :title="usuario ? `Editar · ${usuario.name}` : 'Editar usuario'">
         <template #leading>
           <UButton to="/usuarios" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver a usuarios" />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>

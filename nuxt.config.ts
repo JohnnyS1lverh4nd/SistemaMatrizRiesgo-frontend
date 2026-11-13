@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     // la red interna del DRO.
     provider: 'none',
     fallbackToApi: false,
+    // Iconos propios del sistema (SVG en app/assets/icons), p. ej. "infotep:perfil".
+    // Usan currentColor: toman el color del tema, también en modo oscuro.
+    customCollections: [
+      { prefix: 'infotep', dir: './app/assets/icons' },
+    ],
     clientBundle: {
       scan: true,
       // Íconos que Nuxt UI usa internamente (interruptor de modo claro/oscuro):

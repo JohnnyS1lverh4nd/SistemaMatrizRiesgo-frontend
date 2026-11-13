@@ -30,6 +30,32 @@ onMounted(async () => {
 
 const vigente = computed(() => ediciones.value.find(e => e.estado === 'vigente'))
 
+// --- Datos del proceso: los edita su creador (Encargado) o el Administrador --
+
+const camposProceso: CampoFormulario[] = [
+  { nombre: 'nombre', etiqueta: 'Proceso', requerido: true },
+  { nombre: 'descripcion', etiqueta: 'Descripción', tipo: 'textarea' },
+]
+const edicionProcesoAbierta = ref(false)
+const { alternar, procesando: alternandoProceso } = useAlternarActivo<Proceso>()
+
+// FormularioModal es genérico pero no infiere el tipo desde sus props: el
+// registro llega como unknown y es el ProcesoResource devuelto por el PUT.
+function procesoGuardado(actualizado: unknown) {
+  proceso.value = actualizado as Proceso
+}
+
+async function alternarProceso() {
+  if (!proceso.value) {
+    return
+  }
+
+  const actualizado = await alternar(`/api/procesos/${proceso.value.id}`, proceso.value)
+  if (actualizado) {
+    proceso.value = actualizado
+  }
+}
+
 // El botón se muestra siempre al Administrador; la importación solo carga
 // procesos sin historial (la API también lo exige), así que con ediciones
 // queda desactivado y explica por qué.
@@ -169,7 +195,7 @@ async function ejecutar() {
 <template>
   <UDashboardPanel id="proceso-matrices">
     <template #header>
-      <UDashboardNavbar :title="proceso?.nombre ?? 'Proceso'">
+      <EncabezadoPanel :title="proceso?.nombre ?? 'Proceso'">
         <template #leading>
           <UButton to="/matrices" icon="i-lucide-arrow-left" color="neutral" variant="ghost" aria-label="Volver a matrices" />
         </template>
@@ -206,11 +232,38 @@ async function ejecutar() {
             @click="nuevaEdicion"
           />
         </template>
-      </UDashboardNavbar>
+      </EncabezadoPanel>
     </template>
 
     <template #body>
       <UAlert v-if="errorProceso || error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="errorProceso ?? error ?? ''" />
+
+      <div v-if="proceso && (proceso.descripcion || proceso.permisos.editar)" class="flex flex-wrap items-start justify-between gap-2">
+        <p class="text-sm text-muted">
+          {{ proceso.descripcion }}
+        </p>
+        <div v-if="proceso.permisos.editar" class="flex flex-wrap gap-1">
+          <UButton icon="i-lucide-pencil" label="Editar proceso" color="neutral" variant="ghost" size="sm" @click="edicionProcesoAbierta = true" />
+          <UButton
+            :icon="proceso.activo ? 'i-lucide-circle-off' : 'i-lucide-circle-check'"
+            :label="proceso.activo ? 'Desactivar proceso' : 'Reactivar proceso'"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            :loading="alternandoProceso === proceso.id"
+            @click="alternarProceso"
+          />
+        </div>
+      </div>
+
+      <UAlert
+        v-if="proceso && !proceso.activo"
+        color="warning"
+        variant="subtle"
+        icon="i-lucide-circle-off"
+        title="Este proceso está inactivo."
+        description="No cuenta en el Inicio ni en los reportes y no admite ediciones nuevas. Sus ediciones se conservan."
+      />
 
       <UAlert
         v-if="!cargando && !vigente && ediciones.length"
@@ -250,6 +303,17 @@ async function ejecutar() {
         :metodo="formulario.metodo"
         :valores-iniciales="formulario.valores"
         @guardado="recargar"
+      />
+
+      <FormularioModal
+        v-if="proceso?.permisos.editar"
+        v-model:open="edicionProcesoAbierta"
+        titulo="Editar proceso"
+        :campos="camposProceso"
+        :url="`/api/procesos/${procesoId}`"
+        metodo="PUT"
+        :valores-iniciales="proceso"
+        @guardado="procesoGuardado"
       />
 
       <ImportacionExcelModal
